@@ -204,8 +204,31 @@ const Messages = () => {
               </div>
             </>
           ) : (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
-              Select a conversation to start messaging
+            <div style={{ 
+              flex: 1, 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              color: 'var(--text-muted)',
+              textAlign: 'center',
+              padding: '2rem'
+            }}>
+              <div style={{ 
+                width: '80px', 
+                height: '80px', 
+                borderRadius: '50%', 
+                background: 'rgba(138, 43, 226, 0.1)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                marginBottom: '1.5rem',
+                border: '1px solid rgba(138, 43, 226, 0.2)'
+              }}>
+                <Send size={40} className="text-primary opacity-50" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Your Inbox</h3>
+              <p style={{ maxWidth: '300px' }}>Select a conversation from the sidebar to start messaging and coordinating applications.</p>
             </div>
           )}
         </div>

@@ -36,6 +36,7 @@ export const jobs = {
   delete: (id) => api.delete(`/jobs/${id}`),
   getMyJobs: () => api.get('/jobs/my-jobs/list'),
   getMatches: (params) => api.get('/jobs/match', { params }),
+  getRecommendations: () => api.get('/recommendations'),
 };
 
 export const applications = {

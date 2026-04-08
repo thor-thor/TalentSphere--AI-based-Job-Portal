@@ -107,6 +107,9 @@ router.put('/profile', auth, authorize('job_seeker'), async (req, res, next) => 
   }
 });
 
+const fs = require('fs');
+const aiService = require('../services/aiService');
+
 router.post('/resume', auth, authorize('job_seeker'), upload.single('resume'), async (req, res, next) => {
   try {
     if (!req.file) {
@@ -114,13 +117,47 @@ router.post('/resume', auth, authorize('job_seeker'), upload.single('resume'), a
     }
 
     const resumeUrl = `/uploads/resumes/${req.file.filename}`;
+    const filePath = path.join(__dirname, '../../uploads/resumes', req.file.filename);
+    const fileBuffer = fs.readFileSync(filePath);
+
+    // Call AI Service for parsing
+    const parsedData = await aiService.parseResume(fileBuffer, req.file.originalname);
+    
+    let aiMetadata = {};
+    if (parsedData && parsedData.extracted_data) {
+      aiMetadata = parsedData.extracted_data;
+      
+      // Optionally update skills automatically
+      if (aiMetadata.skills && aiMetadata.skills.length > 0) {
+        const profileResult = await pool.query('SELECT id FROM job_seeker_profiles WHERE user_id = $1', [req.user.id]);
+        const profileId = profileResult.rows[0].id;
+        
+        for (const skillName of aiMetadata.skills) {
+          // Find or create skill
+          let skillRes = await pool.query('SELECT id FROM skills WHERE name ILIKE $1', [skillName]);
+          let skillId;
+          if (skillRes.rows.length === 0) {
+            const newSkill = await pool.query('INSERT INTO skills (name) VALUES ($1) RETURNING id', [skillName]);
+            skillId = newSkill.rows[0].id;
+          } else {
+            skillId = skillRes.rows[0].id;
+          }
+          
+          await pool.query('INSERT INTO job_seeker_skills (profile_id, skill_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [profileId, skillId]);
+        }
+      }
+    }
 
     await pool.query(
-      'UPDATE job_seeker_profiles SET resume_url = $1, updated_at = NOW() WHERE user_id = $2',
-      [resumeUrl, req.user.id]
+      'UPDATE job_seeker_profiles SET resume_url = $1, ai_metadata = $2, is_parsed = true, updated_at = NOW() WHERE user_id = $3',
+      [resumeUrl, JSON.stringify(aiMetadata), req.user.id]
     );
 
-    res.json({ message: 'Resume uploaded successfully', resumeUrl });
+    res.json({ 
+      message: 'Resume uploaded and parsed successfully', 
+      resumeUrl,
+      extractedSkills: aiMetadata.skills || []
+    });
   } catch (error) {
     next(error);
   }

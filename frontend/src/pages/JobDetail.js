@@ -196,10 +196,99 @@ const JobDetail = () => {
             </div>
 
             {job.salary_min && (
-              <div className="mt-4">
-                <span className="salary-badge text-lg px-4 py-2">
-                  <DollarSign size={20} /> ${job.salary_min.toLocaleString()} - ${job.salary_max?.toLocaleString()}
-                </span>
+              <div className="mt-6">
+                <div className="salary-card">
+                  <div className="salary-icon-container">
+                    <DollarSign size={24} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-success uppercase tracking-wider mb-1">Estimated Annual Salary</div>
+                    <div className="salary-amount">
+                      ${job.salary_min.toLocaleString()} - ${job.salary_max?.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {canApply && job.match_percentage > 0 && (
+              <div className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 rounded-lg bg-primary/20">
+                    <Sparkles size={24} className="text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">AI Analysis & Match</h3>
+                    <p className="text-sm text-gray-400">Personalized insights based on your profile and skills</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-6 mb-8">
+                  <div className="relative w-24 h-24 flex items-center justify-center">
+                    <svg className="w-full h-full transform -rotate-90">
+                      <circle
+                        cx="48" cy="48" r="40"
+                        stroke="rgba(255,255,255,0.05)"
+                        strokeWidth="8"
+                        fill="transparent"
+                      />
+                      <circle
+                        cx="48" cy="48" r="40"
+                        stroke="var(--secondary)"
+                        strokeWidth="8"
+                        strokeDasharray={2 * Math.PI * 40}
+                        strokeDashoffset={2 * Math.PI * 40 * (1 - (job.match_percentage || 0) / 100)}
+                        strokeLinecap="round"
+                        fill="transparent"
+                        className="transition-all duration-1000 ease-out"
+                      />
+                    </svg>
+                    <span className="absolute text-2xl font-black text-white">{job.match_percentage}%</span>
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div className="text-sm font-medium text-gray-300">
+                      {job.match_percentage > 70 ? "Excellent Match!" : job.match_percentage > 40 ? "Good Match" : "Potential Match"}
+                    </div>
+                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-1000" 
+                        style={{ width: `${job.match_percentage}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      You match {matchedSkillsCount} out of {job.skills?.length} key skills required for this role.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-green-500/5 border border-green-500/10">
+                    <div className="text-xs font-bold text-success uppercase tracking-wider mb-2 flex items-center gap-2">
+                      <CheckCircle size={14} /> Matched Skills
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {job.skills?.filter(s => s.is_matched).map(s => (
+                        <span key={s.id} className="text-xs px-2 py-1 rounded bg-green-500/10 text-success border border-green-500/20">
+                          {s.name}
+                        </span>
+                      ))}
+                      {matchedSkillsCount === 0 && <span className="text-xs text-gray-600 italic">None detected</span>}
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-orange-500/5 border border-orange-500/10">
+                    <div className="text-xs font-bold text-warning uppercase tracking-wider mb-2 flex items-center gap-2">
+                      <XCircle size={14} /> Missing Skills
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {job.skills?.filter(s => !s.is_matched).map(s => (
+                        <span key={s.id} className="text-xs px-2 py-1 rounded bg-orange-500/10 text-warning border border-orange-500/20">
+                          {s.name}
+                        </span>
+                      ))}
+                      {(job.skills?.length - matchedSkillsCount) === 0 && <span className="text-xs text-gray-600 italic">None detected</span>}
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -220,14 +309,7 @@ const JobDetail = () => {
 
               {job.skills?.length > 0 && (
                 <section>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-white">Skills & Qualifications</h3>
-                    {canApply && (
-                      <span className="text-sm text-gray-500">
-                        You match <span className="text-primary font-bold">{matchedSkillsCount}/{job.skills.length}</span> skills
-                      </span>
-                    )}
-                  </div>
+                  <h3 className="text-lg font-bold text-white mb-4">Key Qualifications</h3>
                   <div className="flex flex-wrap gap-2">
                     {job.skills.map(skill => (
                       <span 
@@ -238,9 +320,6 @@ const JobDetail = () => {
                             : 'border-glass-border bg-glass bg-opacity-50 text-gray-400'
                         }`}
                       >
-                        {canApply && (
-                          skill.is_matched ? <CheckCircle size={14} /> : <XCircle size={14} className="opacity-30" />
-                        )}
                         {skill.name}
                       </span>
                     ))}
@@ -275,12 +354,26 @@ const JobDetail = () => {
                 )}
               </div>
             ) : isOwner ? (
-              <div className="p-4 rounded-lg bg-primary bg-opacity-10 border border-primary border-opacity-20">
-                <div className="text-primary font-bold text-center mb-2">Your Job Listing</div>
-                <p className="text-sm text-gray-500 text-center">Manage your applicants and listing status here.</p>
+              <div className="p-4 rounded-lg bg-primary bg-opacity-10 border border-primary border-opacity-20 text-center">
+                <div className="text-primary font-bold mb-2">Your Job Listing</div>
+                <p className="text-sm text-gray-500">Manage your applicants and listing status here.</p>
               </div>
             ) : (
-              <Link to="/login" className="btn btn-primary w-full">Login to Apply</Link>
+              <div className="space-y-3 text-center">
+                <Link to="/login" className="btn btn-primary w-full">Login to Apply</Link>
+                <p className="text-xs text-gray-500">Sign in to contact the recruiter</p>
+              </div>
+            )}
+
+            {canApply && (
+              <div className="mt-4 pt-4 border-t border-glass-border">
+                <Link 
+                  to={`/messages?user=${job.recruiter_id}`} 
+                  className="btn btn-outline btn-sm w-full flex items-center justify-center gap-2"
+                >
+                  <Send size={16} /> Message Recruiter
+                </Link>
+              </div>
             )}
 
             {job.application_deadline && (

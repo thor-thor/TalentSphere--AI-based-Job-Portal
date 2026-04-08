@@ -44,14 +44,24 @@ router.post('/', auth, authorize('job_seeker'), async (req, res, next) => {
       return res.status(409).json({ error: 'You have already applied to this job' });
     }
 
-    const profileResult = await pool.query('SELECT resume_url FROM job_seeker_profiles WHERE user_id = $1', [req.user.id]);
-    const resumeUrl = profileResult.rows[0]?.resume_url;
+    const profileResult = await pool.query('SELECT * FROM job_seeker_profiles WHERE user_id = $1', [req.user.id]);
+    const profile = profileResult.rows[0];
+    const resumeUrl = profile?.resume_url;
+    const aiMetadata = profile?.ai_metadata || {};
+
+    // Calculate match score using AI Service
+    let matchScore = 0;
+    const aiService = require('../services/aiService');
+    const matchData = await aiService.matchJob(aiMetadata.text || '', jobResult.rows[0].description);
+    if (matchData) {
+      matchScore = matchData.match_score;
+    }
 
     const result = await pool.query(
-      `INSERT INTO applications (job_id, applicant_id, cover_letter, resume_url)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO applications (job_id, applicant_id, cover_letter, resume_url, match_score)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [jobId, req.user.id, coverLetter, resumeUrl]
+       [jobId, req.user.id, coverLetter, resumeUrl, matchScore]
     );
 
     await pool.query('UPDATE jobs SET applications_count = applications_count + 1 WHERE id = $1', [jobId]);
@@ -134,13 +144,13 @@ router.get('/', auth, async (req, res, next) => {
 
     const result = await pool.query(
       `SELECT a.*, j.title as job_title, j.location as job_location, c.name as company_name, c.logo_url as company_logo,
-              u.first_name, u.last_name, u.email
+              u.first_name, u.last_name, u.email, a.match_score
        FROM applications a
        JOIN jobs j ON a.job_id = j.id
        JOIN companies c ON j.company_id = c.id
        JOIN users u ON a.applicant_id = u.id
        WHERE ${whereClause}
-       ORDER BY a.applied_at DESC
+       ORDER BY ${req.user.role === 'recruiter' ? 'a.match_score DESC, ' : ''}a.applied_at DESC
        LIMIT $${paramCount} OFFSET $${paramCount + 1}`,
       params
     );

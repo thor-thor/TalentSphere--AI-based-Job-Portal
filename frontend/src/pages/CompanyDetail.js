@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, Building, Globe, Users, Star, Briefcase, Clock, Calendar } from 'lucide-react';
+import { MapPin, Building, Globe, Users, Star, Briefcase, Clock, Calendar, Mail } from 'lucide-react';
 import { companies, reviews as reviewsApi } from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -195,10 +195,15 @@ const CompanyDetail = () => {
 
           <div className="card bg-glass-gradient">
             <h3 className="font-bold mb-2 text-primary">Work with us</h3>
-            <p className="text-sm text-gray-300 mb-4">Interested in joining our team? Check out our open positions.</p>
-            <Link to={`/jobs?company=${company.id}`} className="btn btn-primary w-full btn-sm">
-              See Open Jobs
-            </Link>
+            <p className="text-sm text-gray-300 mb-4">Interested in joining our team? Check out our open positions or start a conversation.</p>
+            <div className="space-y-3">
+              <Link to={`/jobs?company=${company.id}`} className="btn btn-primary w-full btn-sm">
+                See Open Jobs
+              </Link>
+              <Link to={`/messages?user=${company.user_id}`} className="btn btn-outline w-full btn-sm flex items-center justify-center gap-2">
+                <Mail size={14} /> Message Company
+              </Link>
+            </div>
           </div>
         </div>
       </div>

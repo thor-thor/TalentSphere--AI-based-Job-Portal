@@ -139,8 +139,8 @@ const Jobs = () => {
 
       <div className="flex justify-between items-center mt-6">
         {job.salary_min ? (
-          <span className="salary-badge text-xs">
-            ${job.salary_min.toLocaleString()} - ${job.salary_max?.toLocaleString()}
+          <span className="salary-badge">
+            <DollarSign size={14} /> ${job.salary_min.toLocaleString()} - ${job.salary_max?.toLocaleString()}
           </span>
         ) : (
           <span className="text-xs text-gray-500">Salary Undisclosed</span>

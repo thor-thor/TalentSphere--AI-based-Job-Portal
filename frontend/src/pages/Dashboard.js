@@ -25,10 +25,10 @@ const Dashboard = () => {
     setLoading(true);
     try {
       if (user.role === 'job_seeker') {
-        const [applicationsRes, savedJobsRes, matchesRes, analyticsRes] = await Promise.all([
+        const [applicationsRes, savedJobsRes, recommendationsRes, analyticsRes, profileRes] = await Promise.all([
           applications.getAll({ limit: 100 }),
           users.getSavedJobs(),
-          jobs.getMatches({ limit: 3 }),
+          jobs.getRecommendations(),
           analytics.getSeeker(),
           users.getProfile()
         ]);
@@ -39,7 +39,7 @@ const Dashboard = () => {
           pendingCount: applicationsRes.data.applications?.filter(a => a.status === 'pending').length || 0,
           interviewCount: applicationsRes.data.applications?.filter(a => a.status === 'interview_scheduled').length || 0
         });
-        setMatches(matchesRes.data.jobs || []);
+        setMatches(recommendationsRes.data.recommendations || []);
         setAnalyticsData(analyticsRes.data);
       } else if (user.role === 'recruiter') {
         const [jobsRes, applicationsRes, companyRes, analyticsRes] = await Promise.all([

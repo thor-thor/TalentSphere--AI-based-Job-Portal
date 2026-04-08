@@ -21,6 +21,7 @@ import Notifications from './pages/Notifications';
 import Messages from './pages/Messages';
 import CandidateSearch from './pages/CandidateSearch';
 import Footer from './components/Footer';
+import Chatbot from './components/Chatbot';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -111,6 +112,7 @@ const AppRoutes = () => {
         } />
       </Routes>
       <Footer />
+      {user && <Chatbot />}
     </>
   );
 };

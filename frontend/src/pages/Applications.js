@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { applications, assets } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { Briefcase, Clock, CheckCircle, XCircle, Calendar, MoreHorizontal, X } from 'lucide-react';
+import { Briefcase, Clock, CheckCircle, XCircle, Calendar, MoreHorizontal, X, Sparkles } from 'lucide-react';
 
 const Applications = () => {
   const { user } = useAuth();
@@ -105,8 +105,14 @@ const Applications = () => {
                   <Link to={`/jobs/${app.job_id}`} className="font-semibold text-lg">{app.job_title}</Link>
                   <div className="text-gray-500">{app.company_name}</div>
                   {user.role === 'recruiter' && (
-                    <div className="text-sm text-gray-500 mt-1">
-                      {app.first_name} {app.last_name} • {app.email}
+                    <div className="flex items-center gap-3 mt-1">
+                      <div className="text-sm text-gray-500">
+                        {app.first_name} {app.last_name} • {app.email}
+                      </div>
+                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-100 text-primary-700 text-xs font-bold border border-primary-200">
+                        <Sparkles size={12} className="text-secondary" />
+                        {app.match_score}% Match
+                      </div>
                     </div>
                   )}
                 </div>
