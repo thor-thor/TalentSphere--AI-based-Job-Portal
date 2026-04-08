@@ -73,8 +73,10 @@ router.post('/', auth, authorize('job_seeker'), async (req, res, next) => {
         employerResult.rows[0].email,
         employerResult.rows[0].first_name,
         `${req.user.first_name} ${req.user.last_name}`,
+        req.user.email,
         jobResult.rows[0].title,
-        jobResult.rows[0].company_name
+        jobResult.rows[0].company_name,
+        result.rows[0].id
       );
     }
 
