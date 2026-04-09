@@ -21,6 +21,7 @@ const messageRoutes = require('./routes/messages');
 const analyticsRoutes = require('./routes/analytics');
 const recommendationRoutes = require('./routes/recommendations');
 const aiRoutes = require('./routes/ai');
+const chatbotRoutes = require('./routes/chatbot');
 const pool = require('./config/database');
 
 const errorHandler = require('./middleware/errorHandler');
@@ -66,6 +67,7 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

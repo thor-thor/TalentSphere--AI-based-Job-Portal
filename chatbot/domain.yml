@@ -1,0 +1,44 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - job_search
+  - skill_suggestion
+  - profile_recommendation
+
+entities:
+  - job_title
+  - skill
+
+slots:
+  - name: user_id
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+  - name: job_title
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: job_title
+  - name: skill
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: skill
+
+responses:
+  utter_greet:
+    - text: "Hello! I'm your TalentSphere AI assistant. How can I help you today?"
+  utter_goodbye:
+    - text: "Goodbye! Good luck with your job search."
+  utter_ask_job_title:
+    - text: "What kind of job are you looking for?"
+
+actions:
+  - action_search_jobs
+  - action_suggest_skills
+  - action_recommend_jobs_by_profile

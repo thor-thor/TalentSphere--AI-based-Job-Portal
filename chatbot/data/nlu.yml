@@ -1,0 +1,61 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - hey
+    - hello
+    - hi
+    - hello there
+    - good morning
+    - good evening
+    - moin
+    - hey there
+    - let's go
+    - hey dude
+    - goodmorning
+    - goodevening
+    - morning
+    - evening
+
+- intent: goodbye
+  examples: |
+    - good night
+    - goodbye
+    - leave
+    - bye
+    - bye bye
+    - have a nice day
+    - see ya
+    - night
+    - bye check you later
+
+- intent: job_search
+  examples: |
+    - find me a job
+    - I am looking for a job
+    - show me some frontend jobs
+    - search for backend developer roles
+    - any React jobs?
+    - I want to work as a Python developer
+    - find jobs in London
+    - show me remote jobs
+    - I need a full-time job
+    - search for internship opportunities
+
+- intent: skill_suggestion
+  examples: |
+    - what skills should I learn?
+    - suggest some skills for frontend
+    - what are the trending skills in tech?
+    - I want to improve my career, what should I study?
+    - suggest skills for a data scientist
+    - what do I need to learn for Cloud Engineering?
+
+- intent: profile_recommendation
+  examples: |
+    - suggest jobs based on my profile
+    - what jobs match my skills?
+    - find roles that fit my resume
+    - show me personalized job recommendations
+    - what's the best job for me?

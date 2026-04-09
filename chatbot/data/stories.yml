@@ -1,0 +1,28 @@
+version: "3.1"
+
+stories:
+
+- story: greet and help
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- story: job search happy path
+  steps:
+  - intent: job_search
+  - action: action_search_jobs
+
+- story: skill suggestion path
+  steps:
+  - intent: skill_suggestion
+  - action: action_suggest_skills
+
+- story: profile recommendation path
+  steps:
+  - intent: profile_recommendation
+  - action: action_recommend_jobs_by_profile
+
+- story: say goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
