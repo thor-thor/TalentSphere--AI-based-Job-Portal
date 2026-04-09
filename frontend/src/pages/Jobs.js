@@ -155,7 +155,7 @@ const Jobs = () => {
   );
 
   return (
-    <div className="container py-8">
+    <div className="container py-8" style={{ maxWidth: '1400px' }}>
       <div className="jobs-page-wrapper">
         {/* Sidebar Filters */}
         <aside className="filter-sidebar">

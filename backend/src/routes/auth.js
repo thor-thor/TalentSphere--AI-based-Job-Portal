@@ -195,7 +195,18 @@ router.get('/me', auth, async (req, res, next) => {
       }
     }
 
-    res.json({ user, profile });
+    res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        isVerified: user.is_verified,
+        profilePicture: user.profile_picture
+      },
+      profile
+    });
   } catch (error) {
     next(error);
   }

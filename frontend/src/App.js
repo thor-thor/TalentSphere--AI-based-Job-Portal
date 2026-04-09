@@ -22,6 +22,7 @@ import Messages from './pages/Messages';
 import CandidateSearch from './pages/CandidateSearch';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
+import OAuthCallback from './pages/OAuthCallback';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -50,6 +51,7 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
+        <Route path="/oauth/callback" element={<OAuthCallback />} />
         <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <Register />} />
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/jobs/:id" element={<JobDetail />} />

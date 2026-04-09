@@ -43,6 +43,9 @@ CREATE TABLE users (
     verification_token VARCHAR(255),
     reset_token VARCHAR(255),
     reset_token_expires TIMESTAMP,
+    oauth_provider VARCHAR(50),
+    oauth_provider_id VARCHAR(255),
+    profile_picture VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -50,6 +53,7 @@ CREATE TABLE users (
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_users_is_active ON users(is_active);
+CREATE INDEX idx_users_oauth ON users(oauth_provider, oauth_provider_id);
 
 -- =========================================
 -- JOB SEEKER PROFILES

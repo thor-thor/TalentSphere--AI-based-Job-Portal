@@ -774,6 +774,23 @@ select.input option {
   align-items: start;
 }
 
+@media (max-width: 1024px) {
+  .jobs-page-wrapper {
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .jobs-page-wrapper {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-sidebar {
+    position: static;
+  }
+}
+
 .filter-sidebar {
   position: sticky;
   top: 100px;
@@ -877,4 +894,73 @@ select.input option {
 
 .skill-checkbox-label span {
   color: var(--text-main);
+}
+
+/* OAuth Social Login */
+.btn-google {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+}
+.btn-google:hover {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+}
+
+.btn-github {
+  background-color: #24292e;
+  color: #fff;
+  border: 1px solid #24292e;
+}
+.btn-github:hover {
+  background-color: #2f363d;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.inset-0 {
+  top: 0; right: 0; bottom: 0; left: 0;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.border-t {
+  border-top-width: 1px;
+}
+
+.border-gray-300 {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.bg-white {
+  background-color: var(--bg-panel);
 }
