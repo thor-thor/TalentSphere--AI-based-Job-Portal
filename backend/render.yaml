@@ -19,6 +19,8 @@ services:
         generateValue: true
       - key: JWT_EXPIRES_IN
         value: 7d
+      - key: API_URL
+        value: https://talentsphere-backend.onrender.com
       - key: AI_SERVICE_URL
         value: https://talentsphere-ai.onrender.com
       - key: FRONTEND_URL

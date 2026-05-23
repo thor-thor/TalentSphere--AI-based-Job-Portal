@@ -32,7 +32,7 @@ if (isGoogleConfigured) {
   passport.use(new GoogleStrategy({
     clientID: googleClientId,
     clientSecret: googleClientSecret,
-    callbackURL: `${process.env.API_URL || 'http://localhost:5000'}/api/auth/oauth/google/callback`
+    callbackURL: `${process.env.API_URL || process.env.FRONTEND_URL || 'http://localhost:5000'}/api/auth/oauth/google/callback`
   }, async (accessToken, refreshToken, profile, done) => {
     const client = await pool.connect();
     try {
@@ -101,7 +101,7 @@ if (isGithubConfigured) {
   passport.use(new GitHubStrategy({
     clientID: githubClientId,
     clientSecret: githubClientSecret,
-    callbackURL: `${process.env.API_URL || 'http://localhost:5000'}/api/auth/oauth/github/callback`
+    callbackURL: `${process.env.API_URL || process.env.FRONTEND_URL || 'http://localhost:5000'}/api/auth/oauth/github/callback`
   }, async (accessToken, refreshToken, profile, done) => {
     const client = await pool.connect();
     try {
