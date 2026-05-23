@@ -5,6 +5,7 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: node src/server.js
+    postDeployCommand: node src/config/migrate.js
     envVars:
       - key: NODE_ENV
         value: production
