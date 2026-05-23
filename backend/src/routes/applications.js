@@ -3,7 +3,7 @@ const router = express.Router();
 const Joi = require('joi');
 const pool = require('../config/database');
 const { auth, authorize } = require('../middleware/auth');
-const { sendApplicationConfirmation, sendNewApplicationToEmployer } = require('../config/mail');
+const { sendApplicationConfirmation, sendNewApplicationToEmployer, sendStatusUpdateEmail, sendApplicationCancelled } = require('../config/mail');
 
 const applySchema = Joi.object({
   jobId: Joi.string().uuid().required(),
@@ -72,14 +72,14 @@ router.post('/', auth, authorize('job_seeker'), async (req, res, next) => {
       [jobResult.rows[0].recruiter_id, JSON.stringify({ jobId, applicationId: result.rows[0].id })]
     );
 
-    sendApplicationConfirmation(req.user.email, `${req.user.first_name} ${req.user.last_name}`, jobResult.rows[0].title, jobResult.rows[0].company_name);
+    await sendApplicationConfirmation(req.user.email, `${req.user.first_name} ${req.user.last_name}`, jobResult.rows[0].title, jobResult.rows[0].company_name);
 
     const employerResult = await pool.query(
       'SELECT u.email, u.first_name, u.last_name FROM users u JOIN jobs j ON j.recruiter_id = u.id WHERE j.id = $1',
       [jobId]
     );
     if (employerResult.rows.length > 0) {
-      sendNewApplicationToEmployer(
+      await sendNewApplicationToEmployer(
         employerResult.rows[0].email,
         employerResult.rows[0].first_name,
         `${req.user.first_name} ${req.user.last_name}`,
@@ -109,8 +109,28 @@ router.delete('/:id', auth, authorize('job_seeker'), async (req, res, next) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
+    const jobResult = await pool.query(
+      'SELECT j.title, c.name as company_name, j.recruiter_id FROM jobs j JOIN companies c ON j.company_id = c.id WHERE j.id = $1',
+      [applicationResult.rows[0].job_id]
+    );
+
     await pool.query('DELETE FROM applications WHERE id = $1', [id]);
     await pool.query('UPDATE jobs SET applications_count = applications_count - 1 WHERE id = $1', [applicationResult.rows[0].job_id]);
+
+    if (jobResult.rows.length > 0) {
+      const job = jobResult.rows[0];
+      const employerResult = await pool.query('SELECT email, first_name, last_name FROM users WHERE id = $1', [job.recruiter_id]);
+      if (employerResult.rows.length > 0) {
+        const employer = employerResult.rows[0];
+        await sendApplicationCancelled(
+          employer.email,
+          `${employer.first_name} ${employer.last_name}`,
+          `${req.user.first_name} ${req.user.last_name}`,
+          job.title,
+          job.company_name
+        );
+      }
+    }
 
     res.json({ message: 'Application withdrawn successfully' });
   } catch (error) {
@@ -252,6 +272,23 @@ router.put('/:id/status', auth, authorize('recruiter', 'admin'), async (req, res
        VALUES ($1, 'application_status', 'Application Status Update', $2, $3)`,
       [applicationResult.rows[0].applicant_id, `Your application status has been updated to ${status.replace('_', ' ')}`, JSON.stringify({ applicationId: id, status })]
     );
+
+    const applicantResult = await pool.query(
+      'SELECT u.email, u.first_name, u.last_name, j.title, c.name as company_name FROM applications a JOIN users u ON a.applicant_id = u.id JOIN jobs j ON a.job_id = j.id JOIN companies c ON j.company_id = c.id WHERE a.id = $1',
+      [id]
+    );
+
+    if (applicantResult.rows.length > 0) {
+      const applicant = applicantResult.rows[0];
+      await sendStatusUpdateEmail(
+        applicant.email,
+        `${applicant.first_name} ${applicant.last_name}`,
+        applicant.title,
+        applicant.company_name,
+        status,
+        note
+      );
+    }
 
     res.json({ message: 'Status updated successfully' });
   } catch (error) {
